@@ -9,8 +9,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        webview.settings?.javaScriptEnabled = true
         webview.loadUrl("https://www.mmprojectitalia.it/")
+        webview.settings?.javaScriptEnabled = true
     }
 }
