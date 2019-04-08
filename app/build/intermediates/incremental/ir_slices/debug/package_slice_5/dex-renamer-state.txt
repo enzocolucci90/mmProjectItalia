@@ -1,0 +1,4 @@
+#Mon Apr 08 21:01:57 CEST 2019
+base.0=C\:\\Users\\enzoc\\Desktop\\lavoro\\mmprojectitalia\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\5
+path.0=classes.dex
+renamed.0=classes.dex
