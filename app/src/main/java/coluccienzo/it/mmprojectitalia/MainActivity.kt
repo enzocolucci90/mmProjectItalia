@@ -6,9 +6,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
+import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.toolbar.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +24,8 @@ class MainActivity : AppCompatActivity() {
             url = "https://www.mmprojectitalia.it/"
         }
         setContentView(R.layout.activity_main)
+
+        setToolbar(toolbar)
 
         val dialog = ProgressDialog.show(
             this, "",
@@ -37,12 +41,15 @@ class MainActivity : AppCompatActivity() {
         webview.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                if (url?.contains("@")) {
+                if (url?.contains("mailto:")) {
                     val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse(url))
                     startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
-                } else if (url?.contains("maps")){
+                } else if (url?.equals("tel:+390828722614")){
+                    val callIntent = Intent(Intent.ACTION_DIAL, Uri.parse(url))
+                    startActivity(Intent.createChooser(callIntent, "Chooser Title"))
+                }else if (url?.contains("https://maps.google.com")){
                     val mapsIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    mapsIntent.setPackage("com.google.android.apps.maps");
+//                    mapsIntent.setPackage("com.google.android.apps.maps");
                     startActivity(Intent.createChooser(mapsIntent, "Chooser Title"))
                 } else {
                     webview.loadUrl(url)
@@ -66,6 +73,12 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    private fun setToolbar(toolbar: View?) {
+        left_text_view.setOnClickListener {
+            webview.goBack()
+        }
     }
 
     public override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -96,5 +109,6 @@ class MainActivity : AppCompatActivity() {
         // system behavior (probably exit the activity)
         return super.onKeyDown(keyCode, event)
     }
+
 }
 
