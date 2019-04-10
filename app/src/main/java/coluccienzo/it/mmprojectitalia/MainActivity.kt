@@ -1,43 +1,52 @@
 package coluccienzo.it.mmprojectitalia
 
-import android.content.Context
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.view.KeyEvent
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import kotlinx.android.synthetic.main.activity_main.*
-import android.graphics.Bitmap
-import android.util.Log
-import android.view.KeyEvent
-import android.app.ProgressDialog
-
-
 
 
 class MainActivity : AppCompatActivity() {
-    private val URL : String = "URL"
-    var url : String = ""
+    private val URL: String = "URL"
+
+    var url: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             url = "https://www.mmprojectitalia.it/"
         }
         setContentView(R.layout.activity_main)
+
         val dialog = ProgressDialog.show(
             this, "",
             "Loading. Please wait...", true
         )
-        webview.loadUrl(url)
+
+        if (url != "") {
+            webview.loadUrl(url)
+        }
 
         webview.settings?.javaScriptEnabled = true
 
         webview.webViewClient = object : WebViewClient() {
 
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                webview.loadUrl(url)
+                if (url?.contains("@")) {
+                    val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse(url))
+                    startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
+                } else if (url?.contains("maps")){
+                    val mapsIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    mapsIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(Intent.createChooser(mapsIntent, "Chooser Title"))
+                } else {
+                    webview.loadUrl(url)
+                }
                 return true
             }
 
@@ -46,9 +55,9 @@ class MainActivity : AppCompatActivity() {
 
                 }*/
 
-                override fun onPageFinished(view: WebView, url: String) {
-                    dialog.hide()
-                }
+            override fun onPageFinished(view: WebView, url: String) {
+                dialog.hide()
+            }
 
             /*override fun onReceivedError(view: WebView, errorCode: Int, description: String, failingUrl: String) {
                 super.onReceivedError(view, errorCode, description, failingUrl)
@@ -57,6 +66,24 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    public override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putString(URL, this.url)
+        // etc.
+    }
+
+    public override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        url = savedInstanceState.getString(URL)
+
+        webview.loadUrl(url)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
